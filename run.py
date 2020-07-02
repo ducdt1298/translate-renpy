@@ -44,15 +44,16 @@ class CurrentLocation:
 
 
 class ClusterUnit:
-    def __init__(self, before_translate, after_translate):
-        self.before_translate = before_translate
-        self.after_translate = after_translate
+    def __init__(self, text, is_translate, whitespace_top, whitespace_end):
+        self.text = text
+        self.is_translate = is_translate
+        self.whitespace_top = whitespace_top
+        self.whitespace_end = whitespace_end
 
 
 class LineUnit:
-    def __init__(self, raw_text, translated_text, clusters_unit):
-        self.raw_text = raw_text
-        self.translated_text = translated_text
+    def __init__(self, text, clusters_unit):
+        self.text = text
         self.clusters_unit: ClusterUnit = clusters_unit
 
 
@@ -109,9 +110,24 @@ def get_content_from_raw(raw_line):
         result += raw_line[i-1]
 
 
+def get_whitespace_top(text):
+    result = ""
+    for c in text:
+        if c != " ":
+            return result
+        result += c
+
+
+def get_whitespace_end(text):
+    result = ""
+    for c in text[::-1]:
+        if c != " ":
+            return result
+        result += c
+
+
 def break_clusters(content):
     clusters_unit = []
-    # break trans obj
     temp = ""
     stop_scan_type = None
     for i in range(len(content)):
@@ -138,9 +154,9 @@ def break_clusters(content):
                 stop_scan_type = 10
             if stop_scan_type is not None:
                 if temp != "":
-                    clusters_unit.append(ClusterUnit(temp.strip(), None))
+                    clusters_unit.append(ClusterUnit(
+                        temp.strip(), True, get_whitespace_top(temp), get_whitespace_end(temp)))
                     temp = ""
-                continue
         else:
             if (stop_scan_type == 1 and content[i] == "]") or (stop_scan_type == 2 and content[i] == "}") \
                     or (stop_scan_type == 3 and content[i-1] == "\\" and content[i] == '"') \
@@ -152,10 +168,14 @@ def break_clusters(content):
                     or (stop_scan_type == 9 and content[i-2] == "." and content[i-3] == "%") \
                     or (stop_scan_type == 10 and content[i-1] == "\\" and content[i] == 'n'):
                 stop_scan_type = None
-            continue
+                if temp != "":
+                    temp += content[i]
+                    clusters_unit.append(ClusterUnit(temp.strip(), False, get_whitespace_top(temp), get_whitespace_end(temp)))
+                    temp = ""
+                    continue
         temp += content[i]
     if temp != "":
-        clusters_unit.append(ClusterUnit(temp.strip(), None))
+        clusters_unit.append(ClusterUnit(temp.strip(), True, get_whitespace_top(temp), get_whitespace_end(temp)))
     return clusters_unit
 
 
@@ -177,7 +197,7 @@ def break_blocks(current_location: CurrentLocation):
                 if is_source_line:
                     content = get_content_from_raw(line)
                     line_units.append(
-                        LineUnit(line, content, break_clusters(content)))
+                        LineUnit(content, break_clusters(content)))
                 else:
                     if len(temp_str + line) > MAX_CHAR_IN_THREAD:
                         current_location.offset = f.tell()
@@ -219,9 +239,9 @@ def translate(txt, input_text_area, wait):
 
 
 def process_line(line_unit: LineUnit):
+    line_unit.text = ""
     for cluster in line_unit.clusters_unit:
-        line_unit.translated_text = line_unit.translated_text.replace(
-            cluster.before_translate, cluster.after_translate)
+        line_unit.text += "{}{}{}".format(cluster.whitespace_top, cluster.text, cluster.whitespace_end)
 
 
 def process_block(block_unit: BlockUnit, input_text_area, wait, thread_index):
@@ -230,14 +250,16 @@ def process_block(block_unit: BlockUnit, input_text_area, wait, thread_index):
     old_after_translate = ""
     for line in block_unit.lines_unit:
         for cluster in line.clusters_unit:
-            if cluster.before_translate == old_before_translate:
-                cluster.after_translate = old_after_translate
+            if not cluster.is_translate:
+                continue
+            temp = cluster.text
+            if cluster.text == old_before_translate:
+                cluster.text = old_after_translate
                 continue
             else:
-                cluster.after_translate = translate(
-                    cluster.before_translate, input_text_area, wait)
-                old_after_translate = cluster.after_translate
-            old_before_translate = cluster.before_translate
+                cluster.text = translate(cluster.text, input_text_area, wait)
+                old_after_translate = cluster.text
+            old_before_translate = temp
             total_cluster_translate[thread_index] += 1
     for line in block_unit.lines_unit:
         process_line(line)
@@ -253,7 +275,7 @@ def write_block_unit(block_unit: BlockUnit, thread_index):
             if count_substring_in_string('"', line) > 0:
                 if not is_source_line:
                     line = line.replace('""', '"{}"'.format(
-                        block_unit.lines_unit[index].translated_text))
+                        block_unit.lines_unit[index].text))
                     index += 1
                     dialogue_thread_done[thread_index] += 1
                 is_source_line = not is_source_line
