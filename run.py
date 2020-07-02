@@ -241,6 +241,12 @@ def translate(txt, input_text_area, wait):
 def process_line(line_unit: LineUnit):
     line_unit.text = ""
     for cluster in line_unit.clusters_unit:
+        if cluster.whitespace_top is None:
+            cluster.whitespace_top = ""
+        if cluster.text is None:
+            cluster.text = ""
+        if cluster.whitespace_end is None:
+            cluster.whitespace_end = ""
         line_unit.text += "{}{}{}".format(cluster.whitespace_top, cluster.text, cluster.whitespace_end)
 
 
