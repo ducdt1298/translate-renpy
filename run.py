@@ -43,12 +43,17 @@ class CurrentLocation:
         self.offset = offset
 
 
+class WhitespaceObject:
+    def __init__(self, whitespace_begin, whitespace_end):
+        self.whitespace_begin = whitespace_begin
+        self.whitespace_end = whitespace_end
+
+
 class ClusterUnit:
-    def __init__(self, text, is_translate, whitespace_top, whitespace_end):
+    def __init__(self, text, is_translate, whitespace_obj):
         self.text = text
         self.is_translate = is_translate
-        self.whitespace_top = whitespace_top
-        self.whitespace_end = whitespace_end
+        self.whitespace_obj = whitespace_obj
 
 
 class LineUnit:
@@ -110,20 +115,20 @@ def get_content_from_raw(raw_line):
         result += raw_line[i-1]
 
 
-def get_whitespace_top(text):
-    result = ""
+def get_whitespace_begin_and_end(text):
+    if text.count(" ") == len(text):
+        return WhitespaceObject(text, "")
+    whitespace_begin = ""
+    whitespace_end = ""
     for c in text:
         if c != " ":
-            return result
-        result += c
-
-
-def get_whitespace_end(text):
-    result = ""
+            break
+        whitespace_begin += c
     for c in text[::-1]:
         if c != " ":
-            return result
-        result += c
+            break
+        whitespace_end += c
+    return WhitespaceObject(whitespace_begin, whitespace_end)
 
 
 def break_clusters(content):
@@ -154,8 +159,9 @@ def break_clusters(content):
                 stop_scan_type = 10
             if stop_scan_type is not None:
                 if temp != "":
+                    whitespace_obj = get_whitespace_begin_and_end(temp)
                     clusters_unit.append(ClusterUnit(
-                        temp.strip(), True, get_whitespace_top(temp), get_whitespace_end(temp)))
+                        temp.strip(), True, whitespace_obj))
                     temp = ""
         else:
             if (stop_scan_type == 1 and content[i] == "]") or (stop_scan_type == 2 and content[i] == "}") \
@@ -170,12 +176,15 @@ def break_clusters(content):
                 stop_scan_type = None
                 if temp != "":
                     temp += content[i]
-                    clusters_unit.append(ClusterUnit(temp.strip(), False, get_whitespace_top(temp), get_whitespace_end(temp)))
+                    whitespace_obj = get_whitespace_begin_and_end(temp)
+                    clusters_unit.append(ClusterUnit(
+                        temp.strip(), False, whitespace_obj))
                     temp = ""
                     continue
         temp += content[i]
     if temp != "":
-        clusters_unit.append(ClusterUnit(temp.strip(), True, get_whitespace_top(temp), get_whitespace_end(temp)))
+        whitespace_obj = get_whitespace_begin_and_end(temp)
+        clusters_unit.append(ClusterUnit(temp.strip(), True, whitespace_obj))
     return clusters_unit
 
 
@@ -241,13 +250,11 @@ def translate(txt, input_text_area, wait):
 def process_line(line_unit: LineUnit):
     line_unit.text = ""
     for cluster in line_unit.clusters_unit:
-        if cluster.whitespace_top is None:
-            cluster.whitespace_top = ""
-        if cluster.text is None:
-            cluster.text = ""
-        if cluster.whitespace_end is None:
-            cluster.whitespace_end = ""
-        line_unit.text += "{}{}{}".format(cluster.whitespace_top, cluster.text, cluster.whitespace_end)
+        line_unit.text += "{}{}{}".format(
+            cluster.whitespace_obj.whitespace_begin,
+            cluster.text,
+            cluster.whitespace_obj.whitespace_end
+        )
 
 
 def process_block(block_unit: BlockUnit, input_text_area, wait, thread_index):
