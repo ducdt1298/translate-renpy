@@ -4,12 +4,21 @@ import os
 import threading
 import shutil
 import time
+import argparse
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+
+PROGRAM_NAME = "Trans Ren"
+VERSION = "1.0"
+DESCRIPTION = "TransRen: Translate your Renpy game into any language"
+EPILOG = "For more information, visit ..."
+
+XPATH_OF_TEXTBOX = "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/div[2]/div/span[1]"
+XPATCH_OF_DELETE_BUTTON = "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div/div"
 MERGED_FILE_FOLDER = "temp1"
 BLOCK_TRANSLATED_FOLDER = "temp2"
 MERGED_RPY_FILE = "temp.txt"
@@ -24,17 +33,13 @@ LANGUAGE_SUPPORT = ["af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", 
                     "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa",
                     "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta",
                     "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "yo", "zu"]
+WEB_DRIVER_OPTIONS = webdriver.ChromeOptions()
+
+# Global variable
 current_location = None
 lock = threading.Lock()
 dialogue_thread_done = []
 total_cluster_translate = []
-# Build option
-WEB_DRIVER_OPTIONS = webdriver.ChromeOptions()
-WEB_DRIVER_OPTIONS.add_argument("--no-sandbox")
-WEB_DRIVER_OPTIONS.add_argument("--disable-gpu")
-WEB_DRIVER_OPTIONS.add_argument("--log-level=3")
-WEB_DRIVER_OPTIONS.add_argument("--disable-extensions")
-WEB_DRIVER_OPTIONS.add_argument("disable-infobars")
 
 
 class CurrentLocation:
@@ -67,6 +72,16 @@ class BlockUnit:
         self.index = index
         self.raw_text = raw_text
         self.lines_unit: LineUnit = lines_unit
+
+
+def build_web_driver_options(show_browser):
+    if not show_browser:
+        WEB_DRIVER_OPTIONS.add_argument("--headless")
+    WEB_DRIVER_OPTIONS.add_argument("--no-sandbox")
+    WEB_DRIVER_OPTIONS.add_argument("--disable-gpu")
+    WEB_DRIVER_OPTIONS.add_argument("--log-level=3")
+    WEB_DRIVER_OPTIONS.add_argument("--disable-extensions")
+    WEB_DRIVER_OPTIONS.add_argument("disable-infobars")
 
 
 def clear_console():
@@ -224,23 +239,20 @@ def translate(txt, input_text_area, wait):
     try:
         # wait text availible
         result = wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/div[2]/div/span[1]"))
+            EC.element_to_be_clickable((By.XPATH, XPATH_OF_TEXTBOX))
         ).text
     except:
         # try something stupid :)))
         input_text_area.send_keys(".")
         try:
             result = wait.until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/div[2]/div/span[1]"))
+                EC.element_to_be_clickable((By.XPATH, XPATH_OF_TEXTBOX))
             ).text
         except:
             print("Error: Cannot translate")
     try:
-        buttonDelte = wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div/div"))
+        wait.until(
+            EC.element_to_be_clickable((By.XPATH, XPATCH_OF_DELETE_BUTTON))
         ).click()
     except:
         print("Error: Cannot clear text field")
@@ -319,8 +331,12 @@ def merge_translated_blocks():
 def runner(thread_index, input_lang, output_lang):
     global current_location
     with webdriver.Chrome(executable_path=DRIVER_PATH, options=WEB_DRIVER_OPTIONS) as driver:
-        driver.get("https://translate.google.com/?hl=" +
-                   input_lang + "#" + input_lang + "/" + output_lang+"/")
+        driver.get(
+            "https://translate.google.com/?hl={input_lang}#{input_lang}/{output_lang}/".format(
+                input_lang = input_lang,
+                output_lang = output_lang
+            )
+        )
         input_text_area = driver.find_element_by_id("source")
         wait = WebDriverWait(driver, MAX_TIME_WAIT_ELEMENT)
         while True:
@@ -401,7 +417,8 @@ def build_rpy_file():
     print("-------Rpy file building completed-------")
 
 
-def main(number_of_thread, input_dỉrectory, input_lang, output_lang):
+def main(args):
+    build_web_driver_options(args.show_browser)
     start = time.time()
     global current_location
     global dialogue_thread_done
@@ -409,15 +426,15 @@ def main(number_of_thread, input_dỉrectory, input_lang, output_lang):
     delete_temp_folder()
     create_temp_folder()
     current_location = CurrentLocation(0, 0)
-    merge_files(get_rpy_files_in_directory(input_dỉrectory))
+    merge_files(get_rpy_files_in_directory(args.input_directory))
 
     total_dialogue = count_string_have_char(
         '"', "{}\\{}".format(MERGED_FILE_FOLDER, MERGED_RPY_FILE)) / 2
 
     threads = []
-    for i in range(number_of_thread):
+    for i in range(args.number_of_thread):
         threads.append(threading.Thread(
-            target=runner, args=(i, input_lang, output_lang)))
+            target=runner, args=(i, args.input_lang, args.output_lang)))
         dialogue_thread_done.append(0)
         total_cluster_translate.append(0)
         threads[i].start()
@@ -433,49 +450,74 @@ def main(number_of_thread, input_dỉrectory, input_lang, output_lang):
         '%H:%M:%S', time.gmtime(end - start))))
 
 
-def cli():
-    print("-------------Translate RenPy-------------")
-    input_dỉrectory = input(
-        "Enter the directory path containing the .rpy file: ")
-    if not is_directory_exists(input_dỉrectory):
+def represents_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
+def check_args(args):
+    if not is_directory_exists(args.input_directory):
         print("Error: The directory does not exist")
         return False
-    print("---Enter input and output language code (https://cloud.google.com/translate/docs/languages)---")
-    input_lang = input("Input language: ")
-    if not input_lang in LANGUAGE_SUPPORT:
-        print("Error: '{}' is not a supported language".format(input_lang))
+    if not args.input_lang in LANGUAGE_SUPPORT:
+        print("Error: '{}' is not a supported language".format(args.input_lang))
+        print("Please visit https://cloud.google.com/translate/docs/languages to refer ISO-639-1 Code")
         return False
-    output_lang = input("Output language: ")
-    if not output_lang in LANGUAGE_SUPPORT:
-        print("Error: '{}' is not a supported language".format(output_lang))
+    if not args.output_lang in LANGUAGE_SUPPORT:
+        print("Error: '{}' is not a supported language".format(args.output_lang))
+        print("Please visit https://cloud.google.com/translate/docs/languages to refer ISO-639-1 Code")
         return False
-    print("--")
-    number_of_thread = input("Enter number of thread: ")
-    if number_of_thread == "":
-        print("Error: Please enter number of thread")
+    if not represents_int(args.number_of_thread) or int(args.number_of_thread) < 1:
+        print("Error: Number of thread must be number > 0")
         return False
-    if int(number_of_thread) > 8:
-        is_continue = input(
-            "Many threads will take high CPU, Do you want continue? (y/n): ")
-        if is_continue == "n":
-            return False
-    print("--")
-    show_browser_windows = input(
-        "Do you want show browser windows? (y/n): ")
-    if show_browser_windows == "y":
-        is_continue = input(
-            "Show browser windows can take high RAM, do you want continue? (y/n): ")
-        if is_continue != "y":
-            WEB_DRIVER_OPTIONS.add_argument("--headless")
-    else:
-        WEB_DRIVER_OPTIONS.add_argument("--headless")
-    main(int(number_of_thread), input_dỉrectory, input_lang, output_lang)
+    args.input_directory = args.input_directory.strip()
+    args.number_of_thread = int(args.number_of_thread)
+    args.input_lang = args.input_lang.strip()
+    args.output_lang = args.output_lang.strip()
     return True
 
 
-while True:
-    clear_console()
-    if cli():
-        print("--")
-        input("Press enter to exist...")
-        break
+def cli():
+    parser = argparse.ArgumentParser(
+        description=DESCRIPTION,
+        epilog=EPILOG
+    )
+    program_arguments = parser.add_argument_group('program arguments')
+
+    # set version arg
+    parser.add_argument(
+        "-v", "--version", help="show version and exit.",
+        action="version", version="{} version {}".format(PROGRAM_NAME, VERSION)
+    )
+
+    program_arguments.add_argument(
+        "-d", help="directory path containing the .rpy file",
+        dest="input_directory", action="store", metavar="<path>", required=True
+    )
+    program_arguments.add_argument(
+        "-inl", help="the language you want to translate from",
+        dest="input_lang", action="store", metavar="<language>", required=True
+    )
+    program_arguments.add_argument(
+        "-oul", help="the language you want to translate into",
+        dest="output_lang", action="store", metavar="<language>", required=True
+    )
+    program_arguments.add_argument(
+        "-t", help="number of thread (many threads will take high CPU)",
+        dest="number_of_thread", action="store", metavar="<number>", required=True
+    )
+    program_arguments.add_argument(
+        "-sb", "--show-browser", help="show browser while translating (show browser windows can take high RAM)",
+        dest="show_browser", action="store_true"
+    )
+
+    args = parser.parse_args()
+
+    if check_args(args):
+        main(args)
+
+
+cli()
