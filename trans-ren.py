@@ -299,13 +299,15 @@ def check_have_old_translate_content(line):
 
 def remove_old_translate_content(line):
     is_start = False
+    start_index = 0
     for i in range(len(line), 0, -1):
         if line[i-1] == '"':
             if not is_start:
+                start_index = i
                 is_start = True
                 continue
             if line[i-2] != '\\':
-                return line[0:i] + '"\n'
+                return line[0:i] + line[start_index-1::]
 
 
 def write_block_unit(block_unit: BlockUnit, thread_index):
@@ -518,11 +520,11 @@ def cli():
         dest="input_directory", action="store", metavar="<path>", required=True
     )
     program_arguments.add_argument(
-        "-inl", help="the language you want to translate from",
+        "-i", help="the language you want to translate from",
         dest="input_lang", action="store", metavar="<language>", required=True
     )
     program_arguments.add_argument(
-        "-oul", help="the language you want to translate into",
+        "-o", help="the language you want to translate into",
         dest="output_lang", action="store", metavar="<language>", required=True
     )
     program_arguments.add_argument(
