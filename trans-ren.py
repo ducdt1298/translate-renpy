@@ -15,7 +15,7 @@ from selenium.webdriver.common.by import By
 PROGRAM_NAME = "Trans Ren"
 VERSION = "1.0"
 DESCRIPTION = "TransRen: Translate your Renpy game into any language"
-EPILOG = "For more information, visit ..."
+EPILOG = "For more information, visit https://github.com/duc010298-1/translate-renpy"
 
 XPATH_OF_TEXTBOX = "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/div[2]/div/span[1]"
 XPATCH_OF_DELETE_BUTTON = "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div/div"
