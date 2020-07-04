@@ -290,6 +290,24 @@ def process_block(block_unit: BlockUnit, input_text_area, wait, thread_index):
         process_line(line)
 
 
+def check_have_old_translate_content(line):
+    if get_content_from_raw(line) != "":
+        return True
+    else:
+        return False
+
+
+def remove_old_translate_content(line):
+    is_start = False
+    for i in range(len(line), 0, -1):
+        if line[i-1] == '"':
+            if not is_start:
+                is_start = True
+                continue
+            if line[i-2] != '\\':
+                return line[0:i] + '"\n'
+
+
 def write_block_unit(block_unit: BlockUnit, thread_index):
     global dialogue_thread_done
     index = 0
@@ -299,6 +317,8 @@ def write_block_unit(block_unit: BlockUnit, thread_index):
         for line in buf:
             if count_substring_in_string('"', line) > 0:
                 if not is_source_line:
+                    if check_have_old_translate_content(line):
+                        line = remove_old_translate_content(line)
                     line = line.replace('""', '"{}"'.format(
                         block_unit.lines_unit[index].text))
                     index += 1
@@ -333,8 +353,8 @@ def runner(thread_index, input_lang, output_lang):
     with webdriver.Chrome(executable_path=DRIVER_PATH, options=WEB_DRIVER_OPTIONS) as driver:
         driver.get(
             "https://translate.google.com/?hl={input_lang}#{input_lang}/{output_lang}/".format(
-                input_lang = input_lang,
-                output_lang = output_lang
+                input_lang=input_lang,
+                output_lang=output_lang
             )
         )
         input_text_area = driver.find_element_by_id("source")
