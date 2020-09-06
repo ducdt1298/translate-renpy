@@ -5,6 +5,7 @@ Author: duc010298
 
 ## Features
 
+- Unlimited number of characters to be translated
 - Using selenium to translate (no need Yandex API key or Google Cloud Services - free for all)
 - Automatically override available languages (you do not need renpy sdk to Generate Translations)
 - Automatically ignores variables or special characters during translation:
