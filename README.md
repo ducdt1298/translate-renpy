@@ -107,7 +107,9 @@ Author: duc010298
       python trans-ren.py -d "D:\Game\My_cute_roommate-1.6.1ex-win\game\tl\english" -i en -o vi -t 4 -sb
 
 ### Demo
-Updating
+In short, I deleted some files in the Transitions folder to make the translation faster
+
+[https://www.youtube.com/watch?v=L9HSHlQyD_k](https://www.youtube.com/watch?v=L9HSHlQyD_k)
 
 ### Help me
 - Please Star this github repository if it is of help to you
