@@ -5,8 +5,26 @@ Author: duc010298
 
 ## Features
 
-- f1
-- f2
+- Using selenium to translate (no need Yandex API key or Google Cloud Services - free for all)
+- Automatically override available languages (you do not need renpy sdk to Generate Translations)
+- Automatically ignores variables or special characters during translation:
+    ### Example
+    1. `[earnings]` is kept after translation
+        ```
+        # m "OK, let's check the school's account. The school's owners have transferred me [earnings] credits."
+        m "OK, vérifions le compte de l'école. Les propriétaires de l'école m'ont transféré [earnings] crédits."
+        ```
+    2. `\n` (break line) is kept after translation
+        ```
+        old "Loading will lose unsaved progress.\nAre you sure you want to do this?"
+        new "Le chargement perdra la progression non enregistrée.\nEs-tu sûr de vouloir faire ça?"
+        ```
+    3. `%s` is kept after translation
+        ```
+        old "Saved screenshot as %s."
+        new ""
+        ```
+    And some other special cases
 
 ## Quick Start
 
