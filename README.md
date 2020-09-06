@@ -23,7 +23,7 @@ Author: duc010298
     3. `%s` is kept after translation
         ```
         old "Saved screenshot as %s."
-        new ""
+        new "Capture d'écran enregistrée sous %s."
         ```
     And some other special cases
 
@@ -109,7 +109,7 @@ Author: duc010298
 ### Demo
 In short, I deleted some files in the Transitions folder to make the translation faster
 
-[https://www.youtube.com/watch?v=L9HSHlQyD_k](https://www.youtube.com/watch?v=L9HSHlQyD_k)
+[Demo](https://imgur.com/26O2xlr.gif)
 
 ### Help me
 - Please Star this github repository if it is of help to you
