@@ -102,7 +102,7 @@ Author: duc010298
 - Transitions folder: `D:\Game\My_cute_roommate-1.6.1ex-win\game\tl\english`
 - Language you want to translate from: `english`
 - Language you want to translate into: `vietnamese`
-- Command i should use:
+- Command should use:
 
       python trans-ren.py -d "D:\Game\My_cute_roommate-1.6.1ex-win\game\tl\english" -i en -o vi -t 4 -sb
 
