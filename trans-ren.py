@@ -237,6 +237,13 @@ def break_blocks(current_location: CurrentLocation):
 def translate(txt, input_text_area, wait):
     if len(txt) <= 1 or validators.url(txt):
         return txt
+    if txt == "with fade" or txt == "with dissolve" or txt == "with pixellate" \
+        or txt == "with move" or txt == "with moveinright" or txt == "with moveoutright" \
+        or txt == "with ease" or txt == "with zoomin" or txt == "with zoomout" or txt == "with zoominout" \
+        or txt == "with vpunch" or txt == "with hpunch" or txt == "with blinds" or txt == "with squares" \
+        or txt == "with wipeleft" or txt == "with slideleft" or txt == "with slideawayleft" or txt == "with pushright" \
+        or txt == "with irisin ":
+        return txt
     result = ""
     input_text_area.send_keys(txt)
     try:
