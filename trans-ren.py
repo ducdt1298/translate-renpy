@@ -17,8 +17,9 @@ VERSION = "1.0"
 DESCRIPTION = "TransRen: Translate your Renpy game into any language"
 EPILOG = "For more information, visit https://github.com/duc010298-1/translate-renpy"
 
-XPATH_OF_TEXTBOX = "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/div[2]/div/span[1]"
-XPATCH_OF_DELETE_BUTTON = "/html/body/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div/div/div[2]/div/div"
+XPATH_INPUT = "/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[1]/span/span/div/textarea"
+XPATH_OF_TEXTBOX = "/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[2]/div[5]/div/div[1]/span[1]/span/span"
+XPATCH_OF_DELETE_BUTTON = "/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[1]/div[2]/div/div/span/button"
 MERGED_FILE_FOLDER = "temp1"
 BLOCK_TRANSLATED_FOLDER = "temp2"
 MERGED_RPY_FILE = "temp.txt"
@@ -359,7 +360,7 @@ def runner(thread_index, input_lang, output_lang):
                 output_lang=output_lang
             )
         )
-        input_text_area = driver.find_element_by_id("source")
+        input_text_area = driver.find_element(By.XPATH, XPATH_INPUT)
         wait = WebDriverWait(driver, MAX_TIME_WAIT_ELEMENT)
         while True:
             block_unit = None
