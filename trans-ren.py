@@ -5,6 +5,7 @@ import threading
 import shutil
 import time
 import argparse
+import validators
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -83,6 +84,7 @@ def build_web_driver_options(show_browser):
     WEB_DRIVER_OPTIONS.add_argument("--log-level=3")
     WEB_DRIVER_OPTIONS.add_argument("--disable-extensions")
     WEB_DRIVER_OPTIONS.add_argument("disable-infobars")
+    WEB_DRIVER_OPTIONS.add_argument("--window-size=500,420")
 
 
 def clear_console():
@@ -233,7 +235,7 @@ def break_blocks(current_location: CurrentLocation):
 
 
 def translate(txt, input_text_area, wait):
-    if len(txt) <= 1:
+    if len(txt) <= 1 or validators.url(txt):
         return txt
     result = ""
     input_text_area.send_keys(txt)
@@ -251,6 +253,7 @@ def translate(txt, input_text_area, wait):
             ).text
         except:
             print("Error: Cannot translate")
+            result = txt
     try:
         wait.until(
             EC.element_to_be_clickable((By.XPATH, XPATCH_OF_DELETE_BUTTON))
