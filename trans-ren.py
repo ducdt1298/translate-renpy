@@ -273,6 +273,7 @@ def translate(txt, input_text_area, wait):
         ).click()
     except:
         print("Error: Cannot clear text field")
+        input_text_area.send_keys('')
     return result.replace("<span title class>", "").replace("</span>", "").replace('"', "'")
 
 
