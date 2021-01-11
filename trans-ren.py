@@ -249,7 +249,7 @@ def translate(txt, input_text_area, wait):
             or txt == "with wipeup" or txt == "with wipedown" or txt == "with slideright" or txt == "with slideup" \
             or txt == "with slidedown" or txt == "with slideawayright" or txt == "with slideawayup" or txt == "with slideawaydown" \
             or txt == "with pushleft" or txt == "with pushup" or txt == "with pushdown" or txt == "with irisout" or txt == "with fdissolve":
-        return txt
+        return ""
     result = ""
     input_text_area.send_keys(txt)
 
