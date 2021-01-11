@@ -252,28 +252,40 @@ def translate(txt, input_text_area, wait):
         return txt
     result = ""
     input_text_area.send_keys(txt)
-    try:
-        # wait text availible
-        result = wait.until(
-            EC.element_to_be_clickable((By.XPATH, XPATH_OF_TEXTBOX))
-        ).text
-    except:
-        # try something stupid :)))
-        input_text_area.send_keys(".")
+
+    is_translate_ok = False
+    for x in range(0, 30):
         try:
+            # wait text availible
             result = wait.until(
                 EC.element_to_be_clickable((By.XPATH, XPATH_OF_TEXTBOX))
             ).text
+            is_translate_ok = True
         except:
-            print("Error: Cannot translate")
+            input_text_area.send_keys(".")
             result = txt
-    try:
-        wait.until(
-            EC.element_to_be_clickable((By.XPATH, XPATCH_OF_DELETE_BUTTON))
-        ).click()
-    except:
-        print("Error: Cannot clear text field")
-        input_text_area.send_keys('')
+        if is_translate_ok:
+            break
+    if not is_translate_ok:
+        print("Error: Cannot translate text")
+
+    is_clear_ok = False
+    for x in range(0, 30):
+        try:
+            wait.until(
+                EC.element_to_be_clickable((By.XPATH, XPATCH_OF_DELETE_BUTTON))
+            ).click()
+            is_clear_ok = True
+        except:
+            try:
+                input_text_area.clear()
+                is_clear_ok = True
+            except:
+                is_clear_ok = False
+        if is_clear_ok:
+            break
+    if not is_translate_ok:
+        print("Error: Cannot clear text area")
     return result.replace("<span title class>", "").replace("</span>", "").replace('"', "'")
 
 
