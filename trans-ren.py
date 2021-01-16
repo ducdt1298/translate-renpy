@@ -28,7 +28,7 @@ MERGED_RPY_FILE = "temp.txt"
 MERGED_BLOCK_FILE = "output-temp.txt"
 SIGN_BREAK_FILE = "ThisIsSomeRandomString"
 MAX_CHAR_IN_THREAD = 1000
-MAX_TIME_WAIT_ELEMENT = 3
+MAX_TIME_WAIT_ELEMENT = 2
 DRIVER_PATH_WIN = "Driver/Win/chromedriver.exe"
 DRIVER_PATH_LINUX = "Driver/Linux/chromedriver"
 DRIVER_PATH_MAC = "Driver/Mac/chromedriver"
@@ -91,8 +91,12 @@ def build_web_driver_options(show_browser):
 
 
 def clear_console():
-    # TODO check system is linux
-    return os.system('cls')
+    if platform == "linux" or platform == "linux2":
+        return os.system('clear')
+    elif platform == "darwin":
+        return os.system('clear')
+    elif platform == "win32":
+        return os.system('cls')
 
 
 def is_directory_exists(directory_path):
@@ -109,7 +113,7 @@ def get_rpy_files_in_directory(directory_path):
 
 
 def merge_files(files):
-    with open("{}\\{}".format(MERGED_FILE_FOLDER, MERGED_RPY_FILE), "w", encoding="utf-8") as temp_file:
+    with open("{}/{}".format(MERGED_FILE_FOLDER, MERGED_RPY_FILE), "w", encoding="utf-8") as temp_file:
         for file in files:
             temp_file.write("{}{}{}\n".format(
                 SIGN_BREAK_FILE, file, SIGN_BREAK_FILE))
@@ -213,7 +217,7 @@ def break_blocks(current_location: CurrentLocation):
     if current_location.offset == -1:
         return None
     current_location.index += 1
-    with open("{}\\{}".format(MERGED_FILE_FOLDER, MERGED_RPY_FILE), "r", encoding="utf8") as f:
+    with open("{}/{}".format(MERGED_FILE_FOLDER, MERGED_RPY_FILE), "r", encoding="utf8") as f:
         f.seek(current_location.offset)
         temp_str = ""
         line_units = []
@@ -346,7 +350,7 @@ def remove_old_translate_content(line):
 def write_block_unit(block_unit: BlockUnit, thread_index):
     global dialogue_thread_done
     index = 0
-    with open("{}\\{}".format(BLOCK_TRANSLATED_FOLDER, block_unit.index), "w", encoding="utf-8") as trans_temp:
+    with open("{}/{}".format(BLOCK_TRANSLATED_FOLDER, block_unit.index), "w", encoding="utf-8") as trans_temp:
         is_source_line = True
         buf = io.StringIO(block_unit.raw_text)
         for line in buf:
@@ -375,9 +379,9 @@ def merge_translated_blocks():
     print("--")
     print("Merge the translated blocks...")
     total_temp_file = count_file_in_folder(BLOCK_TRANSLATED_FOLDER)
-    with open("{}\\{}".format(MERGED_FILE_FOLDER, MERGED_BLOCK_FILE), "w", encoding="utf-8") as output_file:
+    with open("{}/{}".format(MERGED_FILE_FOLDER, MERGED_BLOCK_FILE), "w", encoding="utf-8") as output_file:
         for i in range(total_temp_file):
-            with open("{}\\{}".format(BLOCK_TRANSLATED_FOLDER, i+1), "r", encoding="utf8") as f:
+            with open("{}/{}".format(BLOCK_TRANSLATED_FOLDER, i+1), "r", encoding="utf8") as f:
                 for line in f:
                     output_file.write(line)
     print("-------------Merge completed-------------")
@@ -456,7 +460,7 @@ def build_rpy_file():
     print("--")
     print("Building rpy file...")
     current_rpy_file_path = ""
-    with open("{}\\{}".format(MERGED_FILE_FOLDER, MERGED_BLOCK_FILE), "r", encoding="utf-8") as f:
+    with open("{}/{}".format(MERGED_FILE_FOLDER, MERGED_BLOCK_FILE), "r", encoding="utf-8") as f:
         while True:
             line = f.readline()
             if not line:
@@ -493,7 +497,7 @@ def main(args):
     merge_files(get_rpy_files_in_directory(args.input_directory))
 
     total_dialogue = count_string_have_char(
-        '"', "{}\\{}".format(MERGED_FILE_FOLDER, MERGED_RPY_FILE)) / 2
+        '"', "{}/{}".format(MERGED_FILE_FOLDER, MERGED_RPY_FILE)) / 2
 
     threads = []
     for i in range(args.number_of_thread):
