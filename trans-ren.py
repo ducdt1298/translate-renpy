@@ -45,6 +45,7 @@ current_location = None
 lock = threading.Lock()
 dialogue_thread_done = []
 total_cluster_translate = []
+is_stop_translate = False
 
 
 class CurrentLocation:
@@ -242,6 +243,7 @@ def break_blocks(current_location: CurrentLocation):
 
 
 def translate(txt, input_text_area, wait):
+    global is_stop_translate
     if len(txt) <= 1 or validators.url(txt):
         return txt
     if ("with fade" in txt) or ("with dissolve" in txt) or ("with pixellate" in txt) \
@@ -258,26 +260,35 @@ def translate(txt, input_text_area, wait):
             or ("with pushup" in txt) or ("with pushdown" in txt) or ("with irisout" in txt) or ("with fdissolve" in txt):
         return ""
     result = ""
-    input_text_area.send_keys(txt)
 
     is_translate_ok = False
-    for x in range(0, 30):
-        try:
-            # wait text availible
-            result = wait.until(
-                EC.element_to_be_clickable((By.XPATH, XPATH_OF_TEXTBOX))
-            ).text
-            is_translate_ok = True
-        except:
-            input_text_area.send_keys(".")
-            result = txt
-        if is_translate_ok:
+    while True:
+        input_text_area.clear()
+        input_text_area.send_keys(txt)
+        while True:
+            if not is_stop_translate:
+                break
+            time.sleep(5)
+        for x in range(0, 5):
+            try:
+                # wait text availible
+                result = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, XPATH_OF_TEXTBOX))
+                ).text
+                is_translate_ok = True
+            except:
+                input_text_area.send_keys(".")
+                result = txt
+            if is_translate_ok:
+                break
+        if not is_translate_ok:
+            # print("Error: Cannot translate text")
+            is_stop_translate = True
+        else:
             break
-    if not is_translate_ok:
-        print("Error: Cannot translate text")
 
     is_clear_ok = False
-    for x in range(0, 30):
+    for x in range(0, 10):
         try:
             wait.until(
                 EC.element_to_be_clickable((By.XPATH, XPATCH_OF_DELETE_BUTTON))
@@ -414,6 +425,7 @@ def runner(thread_index, input_lang, output_lang, driver_path):
 def monitoring_process(total_dialogue):
     global dialogue_thread_done
     global total_cluster_translate
+    global is_stop_translate
     while True:
         clear_console()
         total = sum(dialogue_thread_done)
@@ -428,6 +440,11 @@ def monitoring_process(total_dialogue):
             print("Total dialogue done on thread {}: {}".format(
                 i + 1, dialogue_thread_done[i]))
         time.sleep(1)
+        if is_stop_translate:
+            print(" ")
+            print("Translation was stopped because the issue of network")
+            input("Press Enter to try again...")
+            is_stop_translate = False
         if total == total_dialogue:
             print("----------Translation completed----------")
             break
