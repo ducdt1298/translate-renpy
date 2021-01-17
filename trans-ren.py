@@ -439,7 +439,7 @@ def monitoring_process(total_dialogue):
         for i in range(len(dialogue_thread_done)):
             print("Total dialogue done on thread {}: {}".format(
                 i + 1, dialogue_thread_done[i]))
-        time.sleep(1)
+        time.sleep(3)
         if is_stop_translate:
             print(" ")
             print("Translation was stopped because the issue of network")
