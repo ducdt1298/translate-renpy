@@ -21,7 +21,7 @@ EPILOG = "For more information, visit https://github.com/duc010298-1/translate-r
 
 XPATH_INPUT = "/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[1]/span/span/div/textarea"
 XPATH_OF_TEXTBOX = "/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[2]/div[5]/div/div[1]/span[1]/span/span"
-XPATCH_OF_DELETE_BUTTON = "/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[1]/div[2]/div/div/span/button"
+XPATCH_OF_DELETE_BUTTON = "/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[1]/div[1]/div/div[1]/span/button"
 MERGED_FILE_FOLDER = "temp1"
 BLOCK_TRANSLATED_FOLDER = "temp2"
 MERGED_RPY_FILE = "temp.txt"
