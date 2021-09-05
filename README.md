@@ -3,6 +3,8 @@ TranslateRenPy
 
 Author: duc010298
 
+Version: 1.1
+
 ## Features
 
 - Unlimited number of characters to be translated
@@ -53,7 +55,7 @@ Author: duc010298
     
     And then download ChromeDriver suitable for your browser at: [chromedriver.chromium.org](https://chromedriver.chromium.org/)
     
-    After downloaded, extract it, copy and rewrite `chromedriver` to folder `Driver\[your_os]` in source code folder
+    After downloaded, extract it, copy and rewrite `chromedriver` to folder `driver\[your_os]` in source code folder
 
 ### Usage
 
@@ -67,49 +69,13 @@ Author: duc010298
     
     ![preview](https://i.imgur.com/qwSUosi.png)
     
-2. To open help menu, open command line in source code folder and run:
+2. Run `run.bat` file
 
-    `python trans-ren.py --help`
-    
-    Help menu may show look like below:
-    
-       usage: trans-ren.py [-h] [-v] -d <path> -i <language> -o <language> -t <number> [-sb]
+    For original language and into language, you should go to cloud.google.com/translate/docs/languages and find ISO-639-1 Code of your language
 
-       TransRen: Translate your Renpy game into any language
+    Number of thread, this is the number of browser tabs the tool will open simultaneously (I recommended 16 for 8Gb Ram)
 
-       optional arguments:
-          -h, --help           show this help message and exit
-          -v, --version        show version and exit.
-
-       program arguments:
-          -d <path>            directory path containing the .rpy file
-          -i <language>        the language you want to translate from
-          -o <language>        the language you want to translate into
-          -t <number>          number of thread (many threads will take high CPU)
-          -sb, --show-browser  show browser while translating (show browser windows can take high RAM)
-
-       For more information, visit https://github.com/duc010298-1/translate-renpy
-
-    `-d` For directory, this is directory of your transitions folder 
-    
-    `-i` `-o` For input language and output language, you should go to [cloud.google.com/translate/docs/languages](https://cloud.google.com/translate/docs/languages) and find `ISO-639-1 Code` of your language
-    
-    `-t` For number of thread, this is the number of browser tabs the tool will open simultaneously (I recommended 4 for 8Gb Ram)
-    
-    If you want to see the process live, you can add `-sb` (show browser) to your command
-### Examples
-    
-- Transitions folder: `D:\Game\My_cute_roommate-1.6.1ex-win\game\tl\english`
-- Language you want to translate from: `english`
-- Language you want to translate into: `vietnamese`
-- Command should use:
-
-      python trans-ren.py -d "D:\Game\My_cute_roommate-1.6.1ex-win\game\tl\english" -i en -o vi -t 4 -sb
-
-### Demo
-In short, I deleted some files in the Transitions folder to make the translation faster
-
-[Demo](https://imgur.com/26O2xlr.gif)
+    You can show the browser during translation but I recommend you to hide it to avoid using too much CPU.
 
 ### Help me
 - Please Star this github repository if it is of help to you

@@ -127,8 +127,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# Translate temp folder
-temp1/
-temp2/
-temp3/
