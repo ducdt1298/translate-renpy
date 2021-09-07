@@ -93,7 +93,6 @@ def translate(phrase, input_text_area, wait, driver):
             is_translate_ok = True
         except:
             send_keys_to_input('.', input_text_area, driver)
-            result = phrase.text
         if is_translate_ok:
             break
     if not is_translate_ok:

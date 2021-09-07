@@ -10,7 +10,7 @@ Version: 1.1
 - Unlimited number of characters to be translated
 - Using selenium to translate (no need Yandex API key or Google Cloud Services - free for all)
 - Automatically override available languages (you do not need renpy sdk to Generate Translations)
-- Automatically ignores variables or special characters during translation:
+- Automatically ignores variables or special characters of Renpy during translation:
     ### Example
     1. `[earnings]` is kept after translation
         ```
@@ -55,7 +55,7 @@ Version: 1.1
     
     And then download ChromeDriver suitable for your browser at: [chromedriver.chromium.org](https://chromedriver.chromium.org/)
     
-    After downloaded, extract it, copy and rewrite `chromedriver` to folder `driver\[your_os]` in source code folder
+    After downloaded, extract it, copy and rewrite `chromedriver` to folder `Driver\[your_os]` in source code folder
 
 ### Usage
 
