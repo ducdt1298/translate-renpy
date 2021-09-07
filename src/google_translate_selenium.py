@@ -16,7 +16,7 @@ XPATCH_OF_DELETE_BUTTON = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]
 XPATCH_AGREE_TERMS_BUTTON = '/html/body/c-wiz/div/div/div/div[2]/div[1]/div[4]/form/div[1]/div/button'
 
 PHRASE_ON_THREAD = 50
-MAX_TIME_WAIT_ELEMENT = 2
+MAX_TIME_WAIT_ELEMENT = 10
 NUMBER_OF_RETRIES = 5
 DRIVER_PATH_WIN = 'Driver/Win/chromedriver.exe'
 DRIVER_PATH_LINUX = 'Driver/Linux/chromedriver'
