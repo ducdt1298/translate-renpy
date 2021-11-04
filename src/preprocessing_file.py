@@ -13,6 +13,8 @@ def get_rpy_files_in_directory(directory_path):
         full_path = os.path.join(directory_path, f)
         if os.path.isfile(full_path) and f.endswith('.rpy'):
             database.add_file(full_path)
+        elif os.path.isdir(full_path):
+            get_rpy_files_in_directory(full_path)
 
 
 def process_all_file():
