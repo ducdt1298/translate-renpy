@@ -3,7 +3,7 @@ TranslateRenPy
 
 Author: duc010298
 
-Version: 1.1
+Version: 1.
 
 ## Features
 
