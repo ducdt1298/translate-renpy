@@ -72,6 +72,7 @@ def process_input_info(folder_dir='', original_language='', into_language='', nu
         original_language = input(
             'Enter the game\'s original language (ISO-639-1): '
         )
+        # TODO check language support papago
         if not original_language in LANGUAGE_SUPPORT:
             process_input_info(folder_dir=folder_dir, translate_tool=translate_tool, is_continue=is_continue)
             return
@@ -82,6 +83,7 @@ def process_input_info(folder_dir='', original_language='', into_language='', nu
         into_language = input(
             'Enter the language you want to translate into (ISO-639-1): '
         )
+         # TODO check language support papago
         if not into_language in LANGUAGE_SUPPORT:
             process_input_info(
                 folder_dir=folder_dir,
