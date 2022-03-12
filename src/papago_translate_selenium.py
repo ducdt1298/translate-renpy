@@ -10,10 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 import database
 import monitoring_selenium
 
-XPATH_OF_INPUT_TEXTBOX = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/span/span/div/textarea'
-XPATH_OF_OUTPUT_TEXTBOX = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div[6]/div/div[1]/span[1]/span/span'
-XPATCH_OF_DELETE_BUTTON = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/div[1]/div/div/span/button'
-XPATCH_AGREE_TERMS_BUTTON = '/html/body/c-wiz/div/div/div/div[2]/div[1]/div[4]/form/div[1]/div/button'
+XPATH_OF_INPUT_TEXTBOX = '/html/body/div/div/div[1]/section/div/div[1]/div[1]/div/div[3]/label/textarea'
+XPATH_OF_OUTPUT_TEXTBOX = '/html/body/div/div/div[1]/section/div/div/div[2]/div/div[5]/div/span'
+XPATCH_OF_DELETE_BUTTON = '/html/body/div/div/div[1]/section/div/div/div[1]/div/div[3]/button'
 
 PHRASE_ON_THREAD = 50
 MAX_TIME_WAIT_ELEMENT = 10
@@ -125,16 +124,6 @@ def translate(phrase, input_text_area, wait, driver):
     return phrase
 
 
-def agree_google_terms(wait):
-    try:
-        wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, XPATCH_AGREE_TERMS_BUTTON))
-        ).click()
-    except:
-        pass
-
-
 def runner(thread_index, driver_path):
     global _is_running
     global _is_error
@@ -142,7 +131,7 @@ def runner(thread_index, driver_path):
     global into_language
     with webdriver.Chrome(executable_path=driver_path, options=WEB_DRIVER_OPTIONS) as driver:
         driver.get(
-            'https://translate.google.com/?hl=en&sl={original_language}&tl={into_language}&op=translate/'.format(
+            'https://papago.naver.com/?sk={original_language}&tk={into_language}'.format(
                 original_language=original_language,
                 into_language=into_language
             )
@@ -150,7 +139,6 @@ def runner(thread_index, driver_path):
         driver.execute_script(
             'document.title = "Thread {}"'.format(thread_index + 1))
         wait = WebDriverWait(driver, MAX_TIME_WAIT_ELEMENT)
-        agree_google_terms(wait)
         input_text_area = get_input_text_area(driver)
         if input_text_area is None:
             set_is_running(False)
