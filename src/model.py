@@ -1,8 +1,9 @@
 class Info:
-    def __init__(self, path, original_language, into_language):
+    def __init__(self, path, original_language, into_language, translate_tool):
         self.path = path
         self.original_language = original_language
         self.into_language = into_language
+        self.translate_tool = translate_tool
 
 
 class FileObject:

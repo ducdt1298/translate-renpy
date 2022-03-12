@@ -15,16 +15,16 @@ def reset_database():
     conn.commit()
 
 
-def add_info(path, original_language, into_language):
+def add_info(path, original_language, into_language, translate_tool):
     c.execute('''
-        INSERT INTO info(path, original_language, into_language) 
-        VALUES(?, ?, ?)
-    ''', (path, original_language, into_language,))
+        INSERT INTO info(path, original_language, into_language, translate_tool) 
+        VALUES(?, ?, ?, ?)
+    ''', (path, original_language, into_language, translate_tool,))
 
 
 def get_info():
     sql = '''
-    SELECT path, original_language, into_language
+    SELECT path, original_language, into_language, translate_tool
     FROM info
     WHERE
         id = 1
@@ -33,7 +33,8 @@ def get_info():
         return Info(
             row[0],
             row[1],
-            row[2]
+            row[2],
+            row[3]
         )
     return None
 

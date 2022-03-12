@@ -5,6 +5,7 @@ import database
 from build_rpy import build_rpy_files
 from console import input_info
 from google_translate_selenium import google_translate_selenium
+from papago_translate_selenium import papago_translate_selenium
 from preprocessing_file import preprocessing_file
 
 
@@ -13,7 +14,12 @@ def main():
     start = time.time()
     if not run_info.get('is_continue'):
         preprocessing_file(run_info.get('folder_dir'))
-    is_translate_error = google_translate_selenium(run_info)
+
+    if run_info.get('translate_tool') == '1':
+        is_translate_error = google_translate_selenium(run_info)
+    if run_info.get('translate_tool') == '2':
+        is_translate_error = papago_translate_selenium(run_info)
+
     if not is_translate_error:
         is_build_success = build_rpy_files()
         if is_build_success:

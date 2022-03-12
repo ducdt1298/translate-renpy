@@ -41,7 +41,7 @@ def print_header():
     print('######################################################################################')
 
 
-def process_input_info(folder_dir='', original_language='', into_language='', number_of_thread='', is_continue=False):
+def process_input_info(folder_dir='', original_language='', into_language='', number_of_thread='', translate_tool='', is_continue=False):
     clear_console()
     print_header()
     if folder_dir:
@@ -54,6 +54,17 @@ def process_input_info(folder_dir='', original_language='', into_language='', nu
             process_input_info(is_continue=is_continue)
             return
 
+    print('Please select translate tool:')
+    print('1. Google translate')
+    print('2. Papago translate')
+    if translate_tool:
+        print('Enter number to select: {}'.format(translate_tool))
+    else:
+        translate_tool = input('Enter number to select: ')
+        if translate_tool.strip() != '1' and translate_tool.strip() != '2':
+            process_input_info(folder_dir=folder_dir, is_continue=is_continue)
+            return
+
     if original_language:
         print(
             'Enter the game\'s original language (ISO-639-1): {}'.format(original_language))
@@ -62,7 +73,7 @@ def process_input_info(folder_dir='', original_language='', into_language='', nu
             'Enter the game\'s original language (ISO-639-1): '
         )
         if not original_language in LANGUAGE_SUPPORT:
-            process_input_info(folder_dir=folder_dir, is_continue=is_continue)
+            process_input_info(folder_dir=folder_dir, translate_tool=translate_tool, is_continue=is_continue)
             return
 
     if into_language:
@@ -74,6 +85,7 @@ def process_input_info(folder_dir='', original_language='', into_language='', nu
         if not into_language in LANGUAGE_SUPPORT:
             process_input_info(
                 folder_dir=folder_dir,
+                translate_tool=translate_tool,
                 original_language=original_language,
                 is_continue=is_continue
             )
@@ -89,6 +101,7 @@ def process_input_info(folder_dir='', original_language='', into_language='', nu
         if not represents_int(number_of_thread) or int(number_of_thread) < 1:
             process_input_info(
                 folder_dir=folder_dir,
+                translate_tool=translate_tool,
                 original_language=original_language,
                 into_language=into_language,
                 is_continue=is_continue
@@ -101,6 +114,7 @@ def process_input_info(folder_dir='', original_language='', into_language='', nu
     if show_browser != 'y' and show_browser != 'n':
         process_input_info(
             folder_dir=folder_dir,
+            translate_tool=translate_tool,
             original_language=original_language,
             into_language=into_language,
             number_of_thread=number_of_thread,
@@ -108,9 +122,10 @@ def process_input_info(folder_dir='', original_language='', into_language='', nu
         )
         return
 
-    database.add_info(folder_dir, original_language, into_language)
+    database.add_info(folder_dir, original_language, into_language, translate_tool)
     return {
         'folder_dir': folder_dir,
+        'translate_tool': translate_tool,
         'original_language': original_language,
         'into_language': into_language,
         'number_of_thread': number_of_thread,
@@ -151,6 +166,7 @@ def input_info():
             folder_dir=info.path,
             original_language=info.original_language,
             into_language=info.into_language,
+            translate_tool=info.translate_tool,
             is_continue=True
         )
     else:
