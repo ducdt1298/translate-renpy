@@ -13,6 +13,7 @@ import monitoring_selenium
 XPATH_OF_INPUT_TEXTBOX = '/html/body/div/div/div[1]/section/div/div[1]/div[1]/div/div[3]/label/textarea'
 XPATH_OF_OUTPUT_TEXTBOX = '/html/body/div/div/div[1]/section/div/div/div[2]/div/div[5]/div/span'
 XPATCH_OF_DELETE_BUTTON = '/html/body/div/div/div[1]/section/div/div/div[1]/div/div[3]/button'
+XPATCH_VOTING = '/html/body/div/div/div[1]/section/div/div/div[2]/div/ul/li[2]/p'
 
 PHRASE_ON_THREAD = 50
 MAX_TIME_WAIT_ELEMENT = 10
@@ -85,6 +86,11 @@ def translate(phrase, input_text_area, wait, driver):
     send_keys_to_input(phrase.text, input_text_area, driver)
     for x in range(0, NUMBER_OF_RETRIES):
         try:
+            # wait text voting
+            wait.until(
+                EC.element_to_be_clickable((By.XPATH, XPATCH_VOTING))
+            )
+
             # wait text availible
             result = wait.until(
                 EC.element_to_be_clickable((By.XPATH, XPATH_OF_OUTPUT_TEXTBOX))
