@@ -1,7 +1,7 @@
 # TranslateRenPy
 TranslateRenPy
 
-Author: duc010298
+Author: duc010298-1
 
 
 ## Features
