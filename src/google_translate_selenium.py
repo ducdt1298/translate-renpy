@@ -12,6 +12,7 @@ import monitoring_selenium
 
 XPATH_OF_INPUT_TEXTBOX = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/span/span/div/textarea'
 XPATH_OF_OUTPUT_TEXTBOX = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div[8]/div/div[1]/span[1]/span/span'
+XPATH_OF_OUTPUT_TEXTBOX_CASE_GENDER_SPECIFIC = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[2]/div[8]/div[1]/div[1]/span[1]'
 XPATCH_OF_DELETE_BUTTON = '/html/body/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[3]/c-wiz[1]/div[1]/div/div/span/button'
 XPATCH_AGREE_TERMS_BUTTON = '/html/body/c-wiz/div/div/div/div[2]/div[1]/div[4]/form/div[1]/div/button'
 
@@ -92,7 +93,20 @@ def translate(phrase, input_text_area, wait, driver):
             ).text
             is_translate_ok = True
         except:
-            send_keys_to_input('.', input_text_area, driver)
+            pass
+
+        # case gender-specific
+        if not is_translate_ok:
+            try:
+                # wait text availible
+                result = wait.until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH, XPATH_OF_OUTPUT_TEXTBOX_CASE_GENDER_SPECIFIC))
+                ).text
+                is_translate_ok = True
+            except:
+                send_keys_to_input('.', input_text_area, driver)
+
         if is_translate_ok:
             break
     if not is_translate_ok:
